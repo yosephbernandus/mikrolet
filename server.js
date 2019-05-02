@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 
 const users = require("./routes/api/users");
+const drivers = require("./routes/api/drivers");
 // const profile = require("./routes/api/profile");
 // const posts = require("./routes/api/posts");
 
@@ -30,6 +31,7 @@ require("./config/passport")(passport);
 
 // use routes
 app.use("/api/users", users);
+app.use("/api/drivers", drivers);
 // app.use("/api/profile", profile);
 // app.use("/api/posts", posts);
 
