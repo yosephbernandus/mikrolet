@@ -11,10 +11,6 @@ const DriverSchema = new Schema({
     type: String,
     required: true
   },
-  nomor: {
-    type: String,
-    required: true
-  },
   kode: {
     type: String,
     required: true
@@ -24,6 +20,14 @@ const DriverSchema = new Schema({
     required: true
   },
   password: {
+    type: String,
+    required: true
+  },
+  longitude: {
+    type: String,
+    required: true
+  },
+  latitude: {
     type: String,
     required: true
   },

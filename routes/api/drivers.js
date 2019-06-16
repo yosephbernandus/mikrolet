@@ -44,8 +44,6 @@ router.post("/register", (req, res) => {
         name: req.body.name,
         email: req.body.email,
         nomor: req.body.nomor,
-        kode: req.body.kode,
-        trayek: req.body.trayek,
         avatar,
         password: req.body.password
       });

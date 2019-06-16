@@ -10,11 +10,11 @@ module.exports = function validateRegisterInput(data) {
   data.password2 = !isEmpty(data.password2) ? data.password2 : "";
 
   if (!validator.isLength(data.name, { min: 2, max: 30 })) {
-    errors.name = "Name must be between 2 and 30 characters";
+    errors.name = "Name must be between 2 and 30 characters"; // Nama 2 sampai 30 karakter
   }
 
   if (validator.isEmpty(data.name)) {
-    errors.name = "Name field is required";
+    errors.name = "Name field is required"; // Nama wajib diisi
   }
 
   if (validator.isEmpty(data.email)) {
@@ -22,7 +22,7 @@ module.exports = function validateRegisterInput(data) {
   }
 
   if (!validator.isEmail(data.email)) {
-    errors.email = "Email is invalid";
+    errors.email = "Email is invalid"; // Email tidak valid
   }
 
   if (validator.isEmpty(data.password)) {
@@ -30,15 +30,15 @@ module.exports = function validateRegisterInput(data) {
   }
 
   if (!validator.isLength(data.password, { min: 6, max: 30 })) {
-    errors.password = "Password must be at least 6 characters";
+    errors.password = "Password must be at least 6 characters"; // Password 6 sampai 30 karakter
   }
 
   if (validator.isEmpty(data.password2)) {
-    errors.password2 = "Confirm Password field is required";
+    errors.password2 = "Confirm Password field is required"; // Confirm Password wajib diisi
   }
 
   if (!validator.equals(data.password, data.password2)) {
-    errors.password2 = "Password must match";
+    errors.password2 = "Password must match"; // Confirm Password harus sama dengan Password
   }
 
   return {

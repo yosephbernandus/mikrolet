@@ -15,6 +15,12 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
+  longitude: {
+    type: String,
+  },
+  latitude: {
+    type: String,
+  },
   avatar: {
     type: String
   },

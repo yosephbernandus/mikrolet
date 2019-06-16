@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const cors = require("cors");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -12,6 +13,7 @@ const validateLoginInput = require("../../validation/login");
 
 //Load user model
 const User = require("../../models/User");
+users.use(cors())
 
 // @route    GET api/users/test
 // @desc     Tests users route
@@ -21,7 +23,7 @@ router.get("/test", (req, res) => res.json({ msg: "Users Works" }));
 // @route    POST api/users/register
 // @desc     Register user
 // @access   Public
-router.post("/register", (req, res) => {
+users.post("/register", (req, res) => {
   const { errors, isValid } = validateRegisterInput(req.body);
 
   // check validation
@@ -43,8 +45,9 @@ router.post("/register", (req, res) => {
       const newUser = new User({
         name: req.body.name,
         email: req.body.email,
+        password: req.body.password,
         avatar,
-        password: req.body.password
+        created: today
       });
 
       bcrypt.genSalt(10, (err, salt) => {
@@ -64,7 +67,7 @@ router.post("/register", (req, res) => {
 // @route    GET api/users/login
 // @desc     Login User / Returning JWT Token
 // @access   Public
-router.post("/login", (req, res) => {
+users.post("/login", (req, res) => {
   const { errors, isValid } = validateLoginInput(req.body);
 
   // check validation
@@ -125,4 +128,4 @@ router.get(
   }
 );
 
-module.exports = router;
+module.exports = users;
