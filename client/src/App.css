@@ -1,0 +1,16 @@
+#root {
+  height: 100%;
+}
+
+.map {
+  height: 430px;
+}
+
+.message-form {
+  z-index: 999;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  max-width: 300px;
+}
+

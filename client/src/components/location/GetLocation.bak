@@ -1,0 +1,35 @@
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { getLocation } from "../../actions/locationActions";
+
+class GetLocation extends Component {
+  // componentWillMount() {
+  //   this.props.getLocation();
+  // }
+
+  render() {
+    const {
+      location: { latitude, longitude }
+    } = this.props.location;
+    return (
+      <div>
+        <h1>Location</h1>
+        <div>
+          latitude: <span>{latitude}</span>
+        </div>
+        <div>
+          longitude: <span>{longitude}</span>
+        </div>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  location: state.location
+});
+
+export default connect(
+  mapStateToProps,
+  { getLocation }
+)(GetLocation);

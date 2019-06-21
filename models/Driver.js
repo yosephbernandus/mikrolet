@@ -11,11 +11,7 @@ const DriverSchema = new Schema({
     type: String,
     required: true
   },
-  nomor: {
-    type: String,
-    required: true
-  },
-  kode: {
+  kode_plat_nomor: {
     type: String,
     required: true
   },

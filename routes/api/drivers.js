@@ -11,7 +11,7 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 
 //Load user model
-const User = require("../../models/Driver");
+const Driver = require("../../models/Driver");
 
 // @route    GET api/users/test
 // @desc     Tests users route
@@ -29,8 +29,8 @@ router.post("/register", (req, res) => {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ email: req.body.email }).then(user => {
-    if (user) {
+  Driver.findOne({ email: req.body.email }).then(driver => {
+    if (driver) {
       errors.email = "Email has already exists";
       return res.status(400).json(errors);
     } else {
@@ -40,10 +40,10 @@ router.post("/register", (req, res) => {
         d: "mm" // default
       });
 
-      const newUser = new User({
+      const newDriver = new Driver({
         name: req.body.name,
         email: req.body.email,
-        nomor: req.body.nomor,
+        kode_plat_nomor: req.body.kode_plat_nomor,
         kode: req.body.kode,
         trayek: req.body.trayek,
         avatar,
@@ -51,12 +51,12 @@ router.post("/register", (req, res) => {
       });
 
       bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
+        bcrypt.hash(newDriver.password, salt, (err, hash) => {
           if (err) throw err;
-          newUser.password = hash;
-          newUser
+          newDriver.password = hash;
+          newDriver
             .save()
-            .then(user => res.json(user))
+            .then(driver => res.json(driver))
             .catch(err => console.log(err));
         });
       });
@@ -79,19 +79,19 @@ router.post("/login", (req, res) => {
   const password = req.body.password;
 
   // find user by email
-  User.findOne({ email }).then(user => {
+  Driver.findOne({ email }).then(driver => {
     //check for user
-    if (!user) {
-      errors.email = "User not found";
+    if (!driver) {
+      errors.email = "Driver not found";
       return res.status(404).json(errors);
     }
 
     // check password
-    bcrypt.compare(password, user.password).then(isMatch => {
+    bcrypt.compare(password, driver.password).then(isMatch => {
       if (isMatch) {
         // user matched
 
-        const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
+        const payload = { id: driver.id, name: driver.name, avatar: driver.avatar }; //create jwt payload
 
         // sign token
         jwt.sign(
@@ -121,9 +121,9 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
     res.json({
-      id: req.user.id,
-      name: req.user.name,
-      email: req.user.email
+      id: req.driver.id,
+      name: req.driver.name,
+      email: req.driver.email
     });
   }
 );
