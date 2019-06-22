@@ -125,7 +125,7 @@ class LoginUser extends Component {
                   </div>
                   <input
                     type="submit"
-                    className="btn btn-primary btn-lg btn-block mt-4"
+                    className="btn btn-primary btn-block mt-4"
                   />
                 </form>
                 <br />

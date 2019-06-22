@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { loginUser } from "../../actions/authActions";
 
 class Profile extends Component {
     constructor() {

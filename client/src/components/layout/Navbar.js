@@ -114,7 +114,6 @@ class Navbar extends Component {
                 className="btn btn-primary btn-lg btn-block"
                 onClick={this.toggleModal.bind(this)}
               >
-                {" "}
                 <i className="icofont-user-alt-5" /> User Registration
               </Link>
               <br />
@@ -123,7 +122,6 @@ class Navbar extends Component {
                 className="btn btn-primary btn-lg btn-block"
                 onClick={this.toggleModal.bind(this)}
               >
-                {" "}
                 <i className="icofont-car" /> Driver Registration
               </Link>
             </ModalBody>
@@ -155,7 +153,6 @@ class Navbar extends Component {
                 className="btn btn-primary btn-lg btn-block"
                 onClick={this.toggleModal2.bind(this)}
               >
-                {" "}
                 <i className="icofont-user-alt-5" /> User Login
               </Link>
               <br />
@@ -164,7 +161,6 @@ class Navbar extends Component {
                 className="btn btn-primary btn-lg btn-block"
                 onClick={this.toggleModal2.bind(this)}
               >
-                {" "}
                 <i className="icofont-car" /> Driver Login
               </Link>
             </ModalBody>

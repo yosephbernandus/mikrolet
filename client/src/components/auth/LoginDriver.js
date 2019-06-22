@@ -75,7 +75,7 @@ class LoginDriver extends Component {
                       className={classnames("form-control form-control-lg", {
                         "is-invalid": errors.email
                       })}
-                      placeholder="Enter Address"
+                      placeholder="Email Address"
                       name="email"
                       value={this.state.email}
                       onChange={this.onChange}

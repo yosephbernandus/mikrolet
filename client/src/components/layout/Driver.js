@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import jwt_decode from 'jwt-decode';
 
 import L from 'leaflet';
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
