@@ -1,6 +1,7 @@
 import io from "socket.io-client";
 
 const socket = io("http://localhost:5000");
+// const socket = io("http://192.168.43.179:5000");
 
 const configureSocket = dispatch => {
   // make sure our socket is connected to the port
@@ -12,5 +13,29 @@ const configureSocket = dispatch => {
 // Send location to server
 export const sendLocationToServer = location =>
   socket.emit("SEND_LOCATION_TO_SERVER", location);
+
+// Send driver location to server
+
+export const sendDriverLocationToServer = driverLocation =>
+  socket.emit("SEND_DRIVER_LOCATION_TO_SERVER", driverLocation);
+
+export const changeSeat = seat => {
+  socket.emit("CHANGE_SEAT", seat);
+};
+
+export const subscribeToTimer = cb => {
+  socket.on("timer", timestamp => cb(null, timestamp));
+  socket.emit("subscribeToTimer", 1000);
+};
+
+// export const sendDriverLocationToServer = driverLocation =>
+//   setInterval(function() {
+//     socket.emit("SEND_DRIVER_LOCATION_TO_SERVER", driverLocation);
+//   }, 7000);
+
+// export const sendLocationToServer = location =>
+//   setInterval(function() {
+//     socket.emit("SEND_LOCATION_TO_SERVER", location);
+//   }, 5000);
 
 export default configureSocket;

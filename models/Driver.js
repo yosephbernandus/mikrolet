@@ -11,11 +11,11 @@ const DriverSchema = new Schema({
     type: String,
     required: true
   },
-  nomor: {
+  status: {
     type: String,
     required: true
   },
-  kode: {
+  kodePlatNomor: {
     type: String,
     required: true
   },

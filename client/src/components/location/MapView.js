@@ -19,7 +19,7 @@ class MapView extends Component {
   }
 
   componentDidMount() {
-    navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
           location: {
@@ -49,6 +49,17 @@ class MapView extends Component {
       },
       { enableHighAccuracy: true, timeout: Infinity, maximumAge: 0 }
     );
+    this.watchID = navigator.geolocation.watchPosition(position => {
+      this.setState({
+        location: {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        },
+        haveUsersLocation: true,
+        zoom: 13,
+        isMarkerShown: true
+      });
+    });
   }
 
   render() {

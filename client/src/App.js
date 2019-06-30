@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/authActions";
-
+import { clearCurrentProfile } from "./actions/profileActions";
 import { Provider } from "react-redux";
 import store from "./store";
 
@@ -17,6 +17,12 @@ import LoginDriver from "./components/auth/LoginDriver";
 import GetLocation from "./components/location/GetLocation";
 import Realtime from "./components/socket/Realtime";
 import MapView from "./components/location/MapView";
+import User from "./components/layout/User";
+import Driver from "./components/layout/Driver";
+import Dashboard from "./components/dashboard/Dashboard";
+import MultipleMarkerGmaps from "./components/location/MultipleMarkerGmaps";
+import PrivateRoute from "./components/common/PrivateRoute";
+import DriverRoute from "./components/common/DriverRoute";
 
 import "./App.css";
 import configureSocket from "./actions/socket";
@@ -38,6 +44,8 @@ if (localStorage.jwtToken) {
     // logout user
     store.dispatch(logoutUser());
     //TODO: clear current profile
+
+    store.dispatch(clearCurrentProfile());
     // Redirect to login
     window.location.href = "/";
   }
@@ -51,14 +59,27 @@ class App extends Component {
           <div className="App">
             <Navbar />
             <Route exact path="/" component={Landing} />
-            <Route exact path="/realtime" component={Realtime} />
-            <Route exact path="/mapview" component={MapView} />
+
             <div className="container">
-              <Route exact path="/location" component={GetLocation} />
               <Route exact path="/registeruser" component={RegisterUser} />
               <Route exact path="/loginuser" component={LoginUser} />
               <Route exact path="/registerdriver" component={RegisterDriver} />
               <Route exact path="/logindriver" component={LoginDriver} />
+              <Route
+                exact
+                path="/multiplemarker"
+                component={MultipleMarkerGmaps}
+              />
+              <Switch>
+                <PrivateRoute exact path="/location" component={GetLocation} />
+                <PrivateRoute exact path="/user" component={User} />
+                <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              </Switch>
+              <Switch>
+                <DriverRoute exact path="/driver" component={Driver} />
+                <DriverRoute exact path="/realtime" component={Realtime} />
+                <DriverRoute exact path="/mapview" component={MapView} />
+              </Switch>
             </div>
             <Footer />
           </div>

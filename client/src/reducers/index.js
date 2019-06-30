@@ -1,12 +1,12 @@
 import { combineReducers } from "redux";
 import authReducer from "./authReducer";
 import errorReducer from "./errorReducer";
-import locationReducer from "./locationReducer";
 import socketReducer from "./socketReducer";
+import profileReducer from "./profileReducer";
 
 export default combineReducers({
   auth: authReducer,
   errors: errorReducer,
-  location: locationReducer,
-  socket: socketReducer
+  socket: socketReducer,
+  profile: profileReducer
 });

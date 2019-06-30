@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import classnames from "classnames";
-import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
+import { registerDriver } from "../../actions/driverActions";
+import TextFieldGroup from "../common/TextFieldGroup";
 
 class RegisterDriver extends Component {
   constructor() {
@@ -10,6 +12,8 @@ class RegisterDriver extends Component {
     this.state = {
       name: "",
       email: "",
+      kodePlatNomor: "",
+      trayek: "",
       password: "",
       password2: "",
       errors: {}
@@ -40,132 +44,118 @@ class RegisterDriver extends Component {
     const newDriver = {
       name: this.state.name,
       email: this.state.email,
+      kodePlatNomor: this.state.kodePlatNomor,
+      trayek: this.state.trayek,
       password: this.state.password,
       password2: this.state.password2
     };
 
-    console.log(newDriver);
+    this.props.registerDriver(newDriver, this.props.history);
   }
 
   render() {
     const { errors } = this.state;
+    // const { user } = this.props.auth;
+
     return (
-      <div class="card-body">
+      <div className="card-body">
         <div className="register">
           <br />
+          {/* {user ? user.name : null} */}
           <div className="container">
             <div className="row">
               <div className="col-md-8 m-auto">
                 <h1 className="display-4 text-center">Sign Up</h1>
                 <p className="lead text-center">
-                  Create your{" "}
+                  Create your
                   <span className="text-primary">
+                    {" "}
                     <i className="icofont-car" /> driver
                   </span>{" "}
                   account.
                 </p>
                 <hr />
                 <br />
-                <form onSubmit={this.onSubmit}>
+                <form noValidate onSubmit={this.onSubmit}>
+                  <TextFieldGroup
+                    label="name"
+                    placeholder="Name"
+                    name="name"
+                    value={this.state.name}
+                    onChange={this.onChange}
+                    error={errors.name}
+                  />
+                  <TextFieldGroup
+                    label="email"
+                    placeholder="Email Address"
+                    name="email"
+                    type="email"
+                    value={this.state.email}
+                    onChange={this.onChange}
+                    error={errors.email}
+                    info="We'll never share your email with anyone else"
+                  />
+                  <TextFieldGroup
+                    label="platnomor"
+                    placeholder="Kode Plat Nomor"
+                    name="kodePlatNomor"
+                    value={this.state.kodePlatNomor}
+                    onChange={this.onChange}
+                    error={errors.kodePlatNomor}
+                  />
+
                   <div className="form-group">
-                    <input
-                      type="text"
-                      className={classnames("form-control form-control-lg", {
-                        "is-invalid": errors.name
-                      })}
-                      placeholder="Name"
-                      name="name"
-                      value={this.state.name}
-                      onChange={this.onChange}
-                    />
-                    {errors.name && (
-                      <div className="invalid-feedback">{errors.name}</div>
-                    )}
-                  </div>
-                  <div className="form-group">
-                    <input
-                      type="email"
-                      className={classnames("form-control form-control-lg", {
-                        "is-invalid": errors.email
-                      })}
-                      placeholder="Email Address"
-                      name="email"
-                      value={this.state.email}
-                      onChange={this.onChange}
-                    />
-                    {errors.email && (
-                      <div className="invalid-feedback">{errors.email}</div>
-                    )}
-                    <small id="emailHelp" className="form-text text-muted">
-                      We'll never share your email with anyone else.
-                    </small>
-                  </div>
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className="form-control form-control-lg"
-                      placeholder="Kode Plat Nomor"
-                      name="kode_plat_nomor"
-                      value={this.state.kode_plat_nomor}
-                      onChange={this.onChange}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <div class="input-group input-group-lg">
-                      <div class="input-group-prepend">
+                    <div className="input-group input-group-lg">
+                      <div className="input-group-prepend">
                         <label
-                          class="input-group-text"
+                          className="input-group-text"
                           for="inputGroupSelect01"
                         >
                           Trayek
                         </label>
                       </div>
-                      <select class="custom-select" id="inputGroupSelect01">
+                      <select
+                        type="text"
+                        className={classnames("form-control form-control-lg", {
+                          "is-invalid": errors.trayek
+                        })}
+                        name="trayek"
+                        value={this.state.trayek}
+                        onChange={this.onChange}
+                      >
                         <option selected>Choose...</option>
-                        <option value="1">Pall 2 - Politeknik</option>
-                        <option value="2">Pall 2 - Lapangan</option>
+                        <option>Pall 2 - Politeknik</option>
+                        <option>Pall 2 - Lapangan</option>
+                        <option>Pall 2 - Kairagi</option>
+                        <option>Pall 2 - 45</option>
                       </select>
+                      {errors.trayek && (
+                        <div className="invalid-feedback">{errors.trayek}</div>
+                      )}
                     </div>
                   </div>
-                  <div className="form-group">
-                    <input
-                      type="password"
-                      className={classnames("form-control form-control-lg", {
-                        "is-invalid": errors.password
-                      })}
-                      placeholder="Password"
-                      name="password"
-                      value={this.state.password}
-                      onChange={this.onChange}
-                    />
-                    {errors.password && (
-                      <div className="invalid-feedback">{errors.password}</div>
-                    )}
-                    <small id="passwordHelpInline" class="text-info">
-                      Must be 6-30 characters long.
-                    </small>
-                  </div>
-                  <div className="form-group">
-                    <input
-                      type="password"
-                      className={classnames("form-control form-control-lg", {
-                        "is-invalid": errors.password2
-                      })}
-                      placeholder="Confirm Password"
-                      name="password2"
-                      value={this.state.password2}
-                      onChange={this.onChange}
-                    />
-                    {errors.password2 && (
-                      <div className="invalid-feedback">{errors.password2}</div>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-lg btn-block mt-4"
-                  >
-                    Sign Up
-                  </button>
+                  <TextFieldGroup
+                    label="password"
+                    placeholder="Password"
+                    name="password"
+                    type="password"
+                    value={this.state.password}
+                    onChange={this.onChange}
+                    error={errors.password}
+                  />
+                  <TextFieldGroup
+                    label="password"
+                    placeholder="Confirm Password"
+                    name="password2"
+                    type="password"
+                    value={this.state.password2}
+                    onChange={this.onChange}
+                    error={errors.password2}
+                  />
+                  <input
+                    type="submit"
+                    className="btn btn-primary btn-block mt-4"
+                  />
                 </form>
                 <br />
                 <p className="lead text-center">
@@ -178,9 +168,6 @@ class RegisterDriver extends Component {
               </div>
             </div>
           </div>
-          <br />
-          <br />
-          <br />
         </div>
       </div>
     );
@@ -200,5 +187,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  null
+  { registerDriver }
 )(withRouter(RegisterDriver));

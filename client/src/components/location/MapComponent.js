@@ -3,9 +3,11 @@ import {
   withScriptjs,
   withGoogleMap,
   GoogleMap,
-  Marker
+  Marker,
+  InfoWindow
 } from "react-google-maps";
 import { compose, withProps } from "recompose";
+import iconUrl from "../../user-placeholder.svg";
 
 const MapComponent = compose(
   withProps({
@@ -26,9 +28,39 @@ const MapComponent = compose(
       <Marker
         position={{ lat: props.latitude, lng: props.longitude }}
         onClick={props.onMarkerClick}
+        icon={{
+          url: iconUrl,
+          size: { width: 30, height: 30 },
+          scaledSize: { width: 30, height: 30 }
+        }}
       />
     )}
   </GoogleMap>
 ));
+// )(props => {
+//   return (
+//     <GoogleMap
+//       defaultZoom={8}
+//       defaultCenter={{ lat: props.latitude, lng: props.longitude }}
+//     >
+//       {props.markers.map(marker => {
+//         const onClick = props.onClick.bind(this, marker);
+//         return (
+//           <Marker
+//             key={marker.id}
+//             onClick={onClick}
+//             position={{ lat: marker.latitude, lng: marker.longitude }}
+//           >
+//             {props.selectedMarker === marker && (
+//               <InfoWindow>
+//                 <div>{marker.shelter}</div>
+//               </InfoWindow>
+//             )}
+//           </Marker>
+//         );
+//       })}
+//     </GoogleMap>
+//   );
+// });
 
 export default MapComponent;

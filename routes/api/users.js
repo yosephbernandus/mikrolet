@@ -43,6 +43,7 @@ router.post("/register", (req, res) => {
       const newUser = new User({
         name: req.body.name,
         email: req.body.email,
+        status: "user",
         avatar,
         password: req.body.password
       });
@@ -88,7 +89,12 @@ router.post("/login", (req, res) => {
       if (isMatch) {
         // user matched
 
-        const payload = { id: user.id, name: user.name, avatar: user.avatar }; //create jwt payload
+        const payload = {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          status: user.status
+        }; //create jwt payload
 
         // sign token
         jwt.sign(

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import classnames from "classnames";
 import { loginUser } from "../../actions/authActions";
 import { Link } from "react-router-dom";
+import TextFieldGroup from "../common/TextFieldGroup";
 
 class LoginUser extends Component {
   constructor() {
@@ -68,42 +68,28 @@ class LoginUser extends Component {
                   account.
                 </p>
                 <form onSubmit={this.onSubmit}>
-                  <div className="form-group">
-                    <label htmlFor="email">Email address</label>
-                    <input
-                      type="email"
-                      className={classnames("form-control form-control-lg", {
-                        "is-invalid": errors.email
-                      })}
-                      placeholder="Email Address"
-                      name="email"
-                      value={this.state.email}
-                      onChange={this.onChange}
-                    />
-                    {errors.email && (
-                      <div className="invalid-feedback">{errors.email}</div>
-                    )}
-                    <small id="emailHelp" className="form-text text-muted">
-                      We'll never share your email with anyone else.
-                    </small>
-                  </div>
+                  <TextFieldGroup
+                    label="email"
+                    labelName="Email"
+                    placeholder="Email Address"
+                    name="email"
+                    type="email"
+                    value={this.state.email}
+                    onChange={this.onChange}
+                    error={errors.email}
+                  />
 
-                  <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input
-                      type={this.state.showPassword ? "text" : "password"}
-                      className={classnames("form-control form-control-lg", {
-                        "is-invalid": errors.password
-                      })}
-                      placeholder="Enter Password"
-                      name="password"
-                      value={this.state.password}
-                      onChange={this.onChange}
-                    />
-                    {errors.password && (
-                      <div className="invalid-feedback">{errors.password}</div>
-                    )}
-                  </div>
+                  <TextFieldGroup
+                    label="password"
+                    labelName="Password"
+                    placeholder="Password"
+                    name="password"
+                    type={this.state.showPassword ? "text" : "password"}
+                    value={this.state.password}
+                    onChange={this.onChange}
+                    error={errors.password}
+                  />
+
                   <div class="custom-control custom-checkbox my-1 mr-sm-2">
                     <input
                       type="checkbox"

@@ -4,11 +4,11 @@ import jwt_decode from "jwt-decode";
 
 import { GET_ERRORS, SET_CURRENT_USER } from "./types";
 
-// Register User
-export const registerUser = (userData, history) => dispatch => {
+// Register Driver
+export const registerDriver = (driverData, history) => dispatch => {
   axios
-    .post("/api/users/register", userData)
-    .then(res => history.push("/"))
+    .post("/api/drivers/register", driverData)
+    .then(res => history.push("/logindriver"))
     .catch(err =>
       dispatch({
         type: GET_ERRORS,
@@ -17,10 +17,10 @@ export const registerUser = (userData, history) => dispatch => {
     );
 };
 
-// Login - Get User Token
-export const loginUser = userData => dispatch => {
+// Login - Get Driver Token
+export const loginDriver = driverData => dispatch => {
   axios
-    .post("/api/users/login", userData)
+    .post("/api/drivers/login", driverData)
     .then(res => {
       // Save to localStorage
       const { token } = res.data;
@@ -28,10 +28,10 @@ export const loginUser = userData => dispatch => {
       localStorage.setItem("jwtToken", token);
       // Set token to Auth header
       setAuthToken(token);
-      // Decode token to get user data
+      // Decode token to get driver data
       const decoded = jwt_decode(token);
-      // Set current user
-      dispatch(setCurrentUser(decoded));
+      // Set current driver
+      dispatch(setCurrentDriver(decoded));
     })
     .catch(err =>
       dispatch({
@@ -41,20 +41,20 @@ export const loginUser = userData => dispatch => {
     );
 };
 
-// Set logged in user
-export const setCurrentUser = decoded => {
+// Set logged in driver
+export const setCurrentDriver = decoded => {
   return {
     type: SET_CURRENT_USER,
     payload: decoded
   };
 };
 
-// Log user out
-export const logoutUser = () => dispatch => {
+// Log driver out
+export const logoutDriver = () => dispatch => {
   // Remove token from localStorage
   localStorage.removeItem("jwtToken");
   // Remove auth header for future requests
   setAuthToken(false);
-  // Set current user to {} which will set isAuthenticated to false
-  dispatch(setCurrentUser({}));
+  // Set current driver to {} which will set isAuthenticated to false
+  dispatch(setCurrentDriver({}));
 };

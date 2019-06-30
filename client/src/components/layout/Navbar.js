@@ -4,6 +4,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import { clearCurrentProfile } from "../../actions/profileActions";
 
 import Logo from "../../img/logo.png";
 
@@ -28,11 +29,12 @@ class Navbar extends Component {
 
   onLogoutClick(e) {
     e.preventDefault();
+    this.props.clearCurrentProfile();
     this.props.logoutUser();
   }
 
   render() {
-    const { isAuthenticated, user } = this.props.auth;
+    const { isAuthenticated } = this.props.auth;
 
     const loginRegLink = (
       <ul className="navbar-nav">
@@ -79,7 +81,7 @@ class Navbar extends Component {
             <span className="navbar-toggler-icon" />
           </button>
 
-          <Link class="navbar-brand" to="/">
+          <Link className="navbar-brand" to="/">
             <img src={Logo} alt="logo" />
           </Link>
 
@@ -189,5 +191,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { logoutUser }
+  { logoutUser, clearCurrentProfile }
 )(withRouter(Navbar));
