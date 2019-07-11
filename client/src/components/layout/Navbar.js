@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
+import { deleteLocation } from "../../actions/socket";
 
 import Logo from "../../img/logo.png";
 
@@ -29,6 +30,8 @@ class Navbar extends Component {
 
   onLogoutClick(e) {
     e.preventDefault();
+    const { user } = this.props.auth;
+    deleteLocation(user);
     this.props.clearCurrentProfile();
     this.props.logoutUser();
   }

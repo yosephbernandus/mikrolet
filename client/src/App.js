@@ -78,8 +78,8 @@ class App extends Component {
               <Switch>
                 <DriverRoute exact path="/driver" component={Driver} />
                 <DriverRoute exact path="/realtime" component={Realtime} />
-                <DriverRoute exact path="/mapview" component={MapView} />
               </Switch>
+              <Route exact path="/mapview" component={MapView} />
             </div>
             <Footer />
           </div>

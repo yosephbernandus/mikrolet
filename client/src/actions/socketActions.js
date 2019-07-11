@@ -1,5 +1,11 @@
 import axios from "axios";
-import { ADD_DRIVER_LOCATION, GET_ERRORS, GET_DRIVER_LOCATION } from "./types";
+import {
+  ADD_DRIVER_LOCATION,
+  GET_ERRORS,
+  GET_DRIVER_LOCATION,
+  GET_DRIVER,
+  GET_USERS
+} from "./types";
 
 // // Get Location
 // export const getLocation = location => {
@@ -43,4 +49,39 @@ export const getDrivers = () => dispatch => {
         payload: null
       });
     });
+};
+
+// GET POSTS User
+export const getUsers = () => dispatch => {
+  axios
+    .get("/api/location/users")
+    .then(res =>
+      dispatch({
+        type: GET_USERS,
+        payload: res.data
+      })
+    )
+    .catch(err => {
+      dispatch({
+        type: GET_USERS,
+        payload: null
+      });
+    });
+};
+
+export const getDriver = userId => dispatch => {
+  axios
+    .get(`api/location/driver/${userId}`)
+    .then(res =>
+      dispatch({
+        type: GET_DRIVER,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_DRIVER,
+        payload: null
+      })
+    );
 };

@@ -1,13 +1,17 @@
 import React, { Component } from "react";
-import MapComponent from "../location/MapComponent";
-import SetDriverLocation from "../location/SetDriverLocation";
+// import MapComponent from "../location/MapComponent";
+// import SetDriverLocation from "../location/SetDriverLocation";
 
 import L from "leaflet";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { sendLocationToServer, subscribeToTimer } from "../../actions/socket";
+import {
+  subscribeToDriver,
+  sendUserLocationToServer,
+  changeCountPassengers
+} from "../../actions/socket";
 import { getDrivers } from "../../actions/socketActions";
 
 import { Link } from "react-router-dom";
@@ -60,13 +64,14 @@ class User extends Component {
         lat: 51.505,
         lng: -0.09
       },
+      counter: 0,
       isMarkerShown: true,
       haveUsersLocation: false,
       zoom: 2,
       driver: []
     };
 
-    subscribeToTimer((err, driver) =>
+    subscribeToDriver((err, driver) =>
       this.setState({
         driver
       })
@@ -76,6 +81,7 @@ class User extends Component {
   //Allow
   componentDidMount() {
     this.props.getDrivers();
+    const { auth } = this.props;
 
     navigator.geolocation.getCurrentPosition(
       position => {
@@ -108,6 +114,16 @@ class User extends Component {
       { enableHighAccuracy: true, timeout: Infinity, maximumAge: 0 }
     );
     this.watchID = navigator.geolocation.watchPosition(position => {
+      const userLocation = {
+        user: auth.user.id,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        status: auth.user.status,
+        name: auth.user.name
+      };
+
+      sendUserLocationToServer(userLocation);
+
       this.setState({
         location: {
           lat: position.coords.latitude,
@@ -118,6 +134,48 @@ class User extends Component {
         isMarkerShown: true
       });
     });
+  }
+
+  // Increment
+  increment() {
+    const { auth } = this.props;
+    if (this.state.counter === 10) {
+      this.setState({
+        counter: 10
+      });
+    } else {
+      this.setState(prevState => ({
+        counter: prevState.counter + 1
+      }));
+
+      let seat = {
+        user: auth.user.id,
+        seat: this.state.counter + 1
+      };
+
+      changeCountPassengers(seat);
+    }
+  }
+
+  // Decrement
+  decrement() {
+    const { auth } = this.props;
+    if (this.state.counter === 0) {
+      this.setState({
+        counter: 0
+      });
+    } else {
+      this.setState(prevState => ({
+        counter: prevState.counter - 1
+      }));
+
+      let seat = {
+        user: auth.user.id,
+        seat: this.state.counter - 1
+      };
+
+      changeCountPassengers(seat);
+    }
   }
 
   handleClick = (marker, event) => {
@@ -141,25 +199,9 @@ class User extends Component {
   };
 
   render() {
-    const { socket } = this.props;
+    const { auth } = this.props;
     const { driver } = this.state;
     const location = [this.state.location.lat, this.state.location.lng];
-    // const driverLocation = [1.433954, 124.97357];
-    // const arrUser = {
-    //   userId: auth.user._id,
-    //   latitude: this.state.location.lat,
-    //   longitude: this.state.location.lat,
-    //   name: auth.user.name,
-    //   status: auth.user.status
-    // };
-    // var newShelters = this.state.shelters.slice();
-    // newShelters.push(arrUser);
-    // this.setState({ shelter: newShelters });
-
-    // dispatch({ type: "SEND_LOCATION", location });
-    sendLocationToServer(socket);
-    // let postContent;
-    // postContent = <SetDriverLocation socket={socket} />;
 
     return (
       <section className="blog-detail" id="blog">
@@ -192,7 +234,38 @@ class User extends Component {
                       {/* {this.state.haveUsersLocation ? ( */}
                       <Marker position={location} icon={myIcon}>
                         <Popup>
-                          A pretty CSS3 popup. <br /> Easily customizable.
+                          <div>
+                            <p>
+                              <h6 className="card-title">
+                                <i
+                                  className="icofont-user-alt-7 text-primary"
+                                  color="blue"
+                                />
+                                <strong> {auth.user.name}</strong>
+                              </h6>
+                            </p>
+                            <hr />
+                            <p className="card-subtitle mb-2 text-muted">
+                              <i className="icofont-clock-time" />{" "}
+                              <span className="text-success">20 minutes</span>{" "}
+                              to your location
+                            </p>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-sm btn-block"
+                              disabled
+                            >
+                              Jumlah Penumpang{" "}
+                              <span className="badge badge-light">
+                                {this.state.counter}
+                              </span>
+                            </button>
+                            <hr />
+                            <p className="card-text">
+                              <i className="icofont-ui-message text-primary" />{" "}
+                              the card title and the card's content.
+                            </p>
+                          </div>
                         </Popup>
                       </Marker>
                       {/* {socket.driverLocation.map(location => (
@@ -375,35 +448,44 @@ class User extends Component {
                       </div>
                     </div>
                   </FormGroup>
+
                   <FormGroup>
-                    <Label for="message">Message</Label>
-                    <Input
-                      onChange={this.valueChanged}
-                      type="textarea"
-                      name="message"
-                      id="message"
-                      placeholder="Enter a message"
-                    />
+                    <Label for="message">Passengers</Label>
+                    <div className="input-counter input-group">
+                      <div className="input-group-prepend">
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          id="minus"
+                          onClick={this.decrement.bind(this)}
+                        >
+                          <i className="fa fa-minus" />
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        className="form-control counter text-center"
+                        id="counter"
+                        value={this.state.counter}
+                      />
+                      <input type="hidden" id="user" value={auth.user.id} />
+                      <div className="input-group-append">
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-add btn-block"
+                          id="plus"
+                          onClick={this.increment.bind(this)}
+                        >
+                          <i className="fa fa-plus" />
+                        </button>
+                      </div>
+                    </div>
                   </FormGroup>
-                  <Button
-                    type="submit"
-                    color="primary"
-                    disabled={!this.state.haveUsersLocation}
-                  >
-                    Send Message
-                  </Button>
+                  <br />
                 </Form>
               </Card>
             </div>
           </div>
-        </div>
-        <div>
-          This is the timer value:{" "}
-          {/* {timestamp.map(home => (
-            <div>
-              {home.kodePlatNomor}/{home.latitude}/{home.longitude}/
-            </div>
-          ))} */}
         </div>
       </section>
     );

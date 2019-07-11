@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import L from "leaflet";
-import { Map, TileLayer, Marker, Popup } from "react-leaflet";
-import { sendLocationToServer } from "../../actions/socket";
+import { Map, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -70,8 +69,10 @@ class GetLocation extends Component {
   render() {
     const { dispatch } = this.props;
     const location = [this.state.location.lat, this.state.location.lng];
-    dispatch({ type: "SEND_LOCATION", location });
-    sendLocationToServer(location);
+    const location2 = ["1.4794752000000002", "124.8509952"];
+    const polyline = [[51.505, -0.09], [51.51, -0.1], [51.51, -0.12]];
+    // dispatch({ type: "SEND_LOCATION", location });
+    // sendLocationToServer(location);
 
     return (
       <div>
@@ -88,15 +89,20 @@ class GetLocation extends Component {
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {this.state.haveUsersLocation ? (
-              <Marker position={location} icon={myIcon}>
-                <Popup>
-                  A pretty CSS3 popup. <br /> Easily customizable.
-                </Popup>
-              </Marker>
-            ) : (
-              ""
-            )}
+
+            <Marker position={location} icon={myIcon}>
+              <Popup>
+                A pretty CSS3 popup. <br /> Easily customizable.
+              </Popup>
+            </Marker>
+
+            <Marker position={location2} icon={myIcon}>
+              <Popup>
+                A pretty CSS3 popup. <br /> Easily customizable.
+              </Popup>
+            </Marker>
+
+            <Polyline color="lime" positions={polyline} />
           </Map>
         </div>
       </div>

@@ -14,18 +14,35 @@ const configureSocket = dispatch => {
 export const sendLocationToServer = location =>
   socket.emit("SEND_LOCATION_TO_SERVER", location);
 
+// Delete Location
+export const deleteLocation = deleteUser =>
+  socket.emit("DELETE_LOCATION", deleteUser);
+
 // Send driver location to server
 
 export const sendDriverLocationToServer = driverLocation =>
   socket.emit("SEND_DRIVER_LOCATION_TO_SERVER", driverLocation);
 
+// Send user location to server
+export const sendUserLocationToServer = userLocation =>
+  socket.emit("SEND_USER_LOCATION_TO_SERVER", userLocation);
+
 export const changeSeat = seat => {
   socket.emit("CHANGE_SEAT", seat);
 };
 
-export const subscribeToTimer = cb => {
-  socket.on("timer", timestamp => cb(null, timestamp));
-  socket.emit("subscribeToTimer", 1000);
+export const changeCountPassengers = seat => {
+  socket.emit("CHANGE_COUNT_PASSENGERS", seat);
+};
+
+export const subscribeToDriver = cb => {
+  socket.on("driver", timestamp => cb(null, timestamp));
+  socket.emit("subscribeToDriver", 1000);
+};
+
+export const subscribeToUser = cb => {
+  socket.on("user", timestamp => cb(null, timestamp));
+  socket.emit("subscribeToUser", 1000);
 };
 
 // export const sendDriverLocationToServer = driverLocation =>

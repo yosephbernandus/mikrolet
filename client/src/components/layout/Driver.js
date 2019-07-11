@@ -4,7 +4,12 @@ import L from "leaflet";
 import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { sendDriverLocationToServer, changeSeat } from "../../actions/socket";
+import {
+  sendDriverLocationToServer,
+  changeSeat,
+  subscribeToUser
+} from "../../actions/socket";
+import { getUsers } from "../../actions/socketActions";
 
 import { Link } from "react-router-dom";
 import {
@@ -16,8 +21,6 @@ import {
   Label,
   CardTitle
 } from "reactstrap";
-
-import iconUrl from "../../car-placeholder.png";
 
 import "../../App.css";
 
@@ -34,7 +37,14 @@ import "../../css/style.css";
 import "../../css/switcher-style.css";
 
 var myIcon = L.icon({
-  iconUrl,
+  iconUrl: require("../../user-placeholder.svg"),
+  iconSize: [35, 51], // Ikuran Icon
+  iconAnchor: [29, 62], // Ukuran Popup ke Atas / ke bawah
+  popupAnchor: [-10, -57] // Ukuran Popup ke kiri / Ke kanan
+});
+
+var driverIcon = L.icon({
+  iconUrl: require("../../car-placeholder.png"),
   iconSize: [35, 51], // Ikuran Icon
   iconAnchor: [29, 62], // Ukuran Popup ke Atas / ke bawah
   popupAnchor: [-10, -57] // Ukuran Popup ke kiri / Ke kanan
@@ -52,16 +62,22 @@ class Driver extends Component {
       isMarkerShown: true,
       haveUsersLocation: false,
       zoom: 2,
-      userMessage: {
-        name: "",
-        message: ""
-      }
+      user: []
     };
+
+    subscribeToUser((err, user) =>
+      this.setState({
+        user
+      })
+    );
   }
 
   //Allow
   componentDidMount() {
-    navigator.geolocation.watchPosition(
+    this.props.getUsers();
+    const { auth } = this.props;
+
+    navigator.geolocation.getCurrentPosition(
       position => {
         this.setState({
           location: {
@@ -92,6 +108,17 @@ class Driver extends Component {
       { enableHighAccuracy: true, timeout: Infinity, maximumAge: 0 }
     );
     this.watchID = navigator.geolocation.watchPosition(position => {
+      const driverLocation = {
+        user: auth.user.id,
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        status: auth.user.status,
+        name: auth.user.name,
+        kodePlatNomor: auth.user.kodePlatNomor,
+        trayek: auth.user.trayek
+      };
+
+      sendDriverLocationToServer(driverLocation);
       this.setState({
         location: {
           lat: position.coords.latitude,
@@ -103,30 +130,6 @@ class Driver extends Component {
       });
     });
   }
-
-  updatePosition(location) {
-    this.setState({
-      location: {
-        lat: location.lat,
-        lng: location.lng
-      }
-    });
-  }
-
-  formSubmitted = event => {
-    event.preventDefault();
-    console.log(this.state.userMessage);
-  };
-
-  valueChanged = event => {
-    const { name, value } = event.target;
-    this.setState(prevState => ({
-      userMessage: {
-        ...prevState.userMessage,
-        [name]: value
-      }
-    }));
-  };
 
   // Increment
   increment() {
@@ -172,19 +175,8 @@ class Driver extends Component {
 
   render() {
     const { auth } = this.props;
+    const { user } = this.state;
     const position = [this.state.location.lat, this.state.location.lng];
-    // dispatch({ type: "SEND_LOCATION", position });
-
-    const driverLocation = {
-      user: auth.user.id,
-      latitude: this.state.location.lat,
-      longitude: this.state.location.lng,
-      status: auth.user.status,
-      name: auth.user.name,
-      kodePlatNomor: auth.user.kodePlatNomor,
-      trayek: auth.user.trayek
-    };
-    sendDriverLocationToServer(driverLocation);
 
     return (
       <section className="blog-detail" id="blog">
@@ -207,10 +199,61 @@ class Driver extends Component {
                         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       />
-                      {this.state.haveUsersLocation ? (
+                      {/* {this.state.haveUsersLocation ? ( */}
+                      <Marker
+                        className="alert alert-success"
+                        position={position}
+                        icon={driverIcon}
+                      >
+                        <Popup>
+                          <div>
+                            <p>
+                              <h6 className="card-title">
+                                <i
+                                  className="icofont-user-alt-7 text-primary"
+                                  color="blue"
+                                />
+                                <strong> {auth.user.name}</strong>
+                              </h6>
+                            </p>
+                            <hr />
+                            <p className="card-subtitle mb-2 text-muted">
+                              <i className="icofont-car" />{" "}
+                              <span className="text-uppercase">
+                                {auth.user.kodePlatNomor}
+                              </span>{" "}
+                              <br />
+                              <i className="icofont-map-pins" />{" "}
+                              {auth.user.trayek} {"  "}{" "}
+                              <span className="badge badge-secondary">
+                                Rp. 6.000,-
+                              </span>{" "}
+                              <br />
+                              <i className="icofont-clock-time" />{" "}
+                              <span className="text-success">20 minutes</span>{" "}
+                              to your location
+                            </p>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-sm btn-block"
+                              disabled
+                            >
+                              Jumlah Penumpang{" "}
+                              <span className="badge badge-light">
+                                {this.state.counter}
+                              </span>
+                            </button>
+                            <hr />
+                            <p className="card-text">
+                              <i className="icofont-ui-message text-primary" />{" "}
+                              the card title and the card's content.
+                            </p>
+                          </div>
+                        </Popup>
+                      </Marker>
+                      {user.map(location => (
                         <Marker
-                          className="alert alert-success"
-                          position={position}
+                          position={[location.latitude, location.longitude]}
                           icon={myIcon}
                         >
                           <Popup>
@@ -221,26 +264,11 @@ class Driver extends Component {
                                     className="icofont-user-alt-7 text-primary"
                                     color="blue"
                                   />
-                                  <strong> Alva Mende</strong>
+                                  <strong> {location.name}</strong>
                                 </h6>
                               </p>
                               <hr />
-                              <p className="card-subtitle mb-2 text-muted">
-                                <i className="icofont-car" />{" "}
-                                <span className="text-uppercase">
-                                  {auth.user.kodePlatNomor}
-                                </span>{" "}
-                                <br />
-                                <i className="icofont-map-pins" />{" "}
-                                {auth.user.trayek} {"  "}{" "}
-                                <span className="badge badge-secondary">
-                                  Rp. 6.000,-
-                                </span>{" "}
-                                <br />
-                                <i className="icofont-clock-time" />{" "}
-                                <span className="text-success">20 minutes</span>{" "}
-                                to your location
-                              </p>
+
                               <button
                                 type="button"
                                 className="btn btn-primary btn-sm btn-block"
@@ -248,7 +276,7 @@ class Driver extends Component {
                               >
                                 Jumlah Penumpang{" "}
                                 <span className="badge badge-light">
-                                  {this.state.counter}
+                                  {location.seat}
                                 </span>
                               </button>
                               <hr />
@@ -259,16 +287,17 @@ class Driver extends Component {
                             </div>
                           </Popup>
                         </Marker>
-                      ) : (
+                      ))}
+                      {/* ) : (
                         ""
-                      )}
+                      )} */}
                     </Map>
                   </div>
                 </div>
                 <div className="post-author">
                   <Link to="#">
                     <i className="icofont-user-alt-7" />
-                    Alva Mende
+                    {auth.user.name}
                   </Link>
                   <Link to="#">
                     <i className="icofont-calendar" /> 25-12-2019
@@ -329,24 +358,6 @@ class Driver extends Component {
                     </div>
                   </FormGroup>
                   <br />
-                  <FormGroup>
-                    <Label for="message">Message</Label>
-                    <Input
-                      onChange={this.valueChanged}
-                      type="textarea"
-                      name="message"
-                      id="message"
-                      placeholder="Enter a message"
-                    />
-                  </FormGroup>
-                  <br />
-                  <Button
-                    type="submit"
-                    color="primary"
-                    disabled={!this.state.haveUsersLocation}
-                  >
-                    Send Message
-                  </Button>
                 </Form>
               </Card>
             </div>
@@ -358,11 +369,17 @@ class Driver extends Component {
 }
 
 Driver.propTypes = {
-  auth: PropTypes.object.isRequired
+  getDrivers: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  socket: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  socket: state.socket
 });
 
-export default connect(mapStateToProps)(Driver);
+export default connect(
+  mapStateToProps,
+  { getUsers }
+)(Driver);

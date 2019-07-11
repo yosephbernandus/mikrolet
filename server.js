@@ -97,19 +97,6 @@ app.use("/api/location", location);
 webSocket.sockets.on("connection", socket => {
   console.log("connected");
 
-  socket.on("SEND_LOCATION_TO_SERVER", location => {
-    console.log(location);
-    // new Location({
-    //   latitude: location[0],
-    //   longitude: location[1]
-    // }).save(function(err, location) {
-    //   if (err) {
-    //     return console.log("Error");
-    //   }
-    //   console.log(location);
-    // });
-  });
-
   socket.on("SEND_DRIVER_LOCATION_TO_SERVER", driverLocation => {
     // console.log(driverLocation);
     let locationFields = {};
@@ -124,40 +111,49 @@ webSocket.sockets.on("connection", socket => {
 
     Location.findOne({ users: driverLocation.user }).then(location => {
       if (location) {
-        console.log("location fields");
         Location.findOneAndUpdate(
           { users: driverLocation.user },
           { $set: locationFields },
           { new: true }
-        ).then(console.log());
+        ).then(location => socket.emit("seat", location.seat));
       } else {
-        console.log("not location fields");
         new Location(locationFields)
           .save()
-          .then(location => socket.emit("get_seat", location.seat));
+          .then(location => socket.emit("seat", location.seat));
       }
     });
+  });
 
-    // new Location(locationFields)
-    //   .save()
-    //   .then(locationFields => console.log(locationFields));
+  socket.on("SEND_USER_LOCATION_TO_SERVER", userLocation => {
+    console.log(userLocation);
+    let userFields = {};
 
-    // new Location(locationFields)
-    //   .save()
-    //   .then(locationFields => console.log(locationFields));
+    userFields.users = userLocation.user;
+    userFields.name = userLocation.name;
+    userFields.status = userLocation.status;
+    userFields.latitude = userLocation.latitude;
+    userFields.longitude = userLocation.longitude;
 
-    // new Driver({
-    //   latitude: driverLocation.latitude,
-    //   longitude: driverLocation.longitude,
-    //   name: driverLocation.name,
-    //   kodePlatNomor: driverLocation.kodePlatNomor,
-    //   trayek: driverLocation.trayek
-    // }).save(function(err, driverLocation) {
-    //   if (err) {
-    //     return console.log("Error");
-    //   }
-    //   console.log(driverLocation);
-    // });
+    Location.findOne({ users: userLocation.user }).then(location => {
+      if (location) {
+        Location.findOneAndUpdate(
+          { users: userLocation.user },
+          { $set: userFields },
+          { new: true }
+        ).then(location => socket.emit("count_passengers", location.seat));
+      } else {
+        new Location(userFields)
+          .save()
+          .then(location => socket.emit("count_passengers", location.seat));
+      }
+    });
+  });
+
+  socket.on("DELETE_LOCATION", deleteUser => {
+    console.log(deleteUser.id);
+    Location.findOneAndRemove({ users: deleteUser.id }).then(() => {
+      console.log("user deleted");
+    });
   });
 
   socket.on("CHANGE_SEAT", seat => {
@@ -177,18 +173,52 @@ webSocket.sockets.on("connection", socket => {
     });
   });
 
-  socket.on("subscribeToTimer", interval => {
+  socket.on("CHANGE_COUNT_PASSENGERS", seat => {
+    let seatFields = {};
+
+    seatFields.users = seat.user;
+    seatFields.seat = seat.seat;
+
+    Location.findOne({ users: seat.user }).then(changeSeat => {
+      if (changeSeat) {
+        Location.findOneAndUpdate(
+          { users: seat.user },
+          { $set: seatFields },
+          { new: true }
+        ).then(console.log());
+      }
+    });
+  });
+
+  socket.on("subscribeToDriver", interval => {
     console.log("client is subscribing to timer with interval", interval);
     setInterval(() => {
-      let driverLocation = {};
+      // let driverLocation = {};
       // Location.find().then(driver => console.log(driver));
       // socket.emit("timer", new Date());
 
-      Location.find({}, (err, data) => {
+      Location.find({ status: "driver" }, (err, data) => {
         if (err) throw err;
         if (data) {
           // RESEND ALL USERS
-          socket.emit("timer", data);
+          socket.emit("driver", data);
+        }
+      });
+    }, interval);
+  });
+
+  socket.on("subscribeToUser", interval => {
+    console.log("client is subscribing to timer with interval", interval);
+    setInterval(() => {
+      // let driverLocation = {};
+      // Location.find().then(driver => console.log(driver));
+      // socket.emit("timer", new Date());
+
+      Location.find({ status: "user" }, (err, data) => {
+        if (err) throw err;
+        if (data) {
+          // RESEND ALL USERS
+          socket.emit("user", data);
         }
       });
     }, interval);

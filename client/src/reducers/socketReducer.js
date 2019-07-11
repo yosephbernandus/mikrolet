@@ -21,10 +21,11 @@
 //   return state;
 // }
 
-import { GET_DRIVER_LOCATION } from "../actions/types";
+import { GET_DRIVER_LOCATION, GET_USERS } from "../actions/types";
 
 const initialState = {
   driverLocation: [],
+  userLocation: [],
   loading: false
 };
 
@@ -34,6 +35,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         driverLocation: action.payload
+      };
+    case GET_USERS:
+      return {
+        ...state,
+        userLocation: action.payload
       };
     default:
       return state;
