@@ -14,53 +14,24 @@ class MapView extends Component {
       },
       isMarkerShown: true,
       haveUsersLocation: false,
-      zoom: 2
+      zoom: 2,
+      shelters: [],
+      selectedMarker: false
     };
   }
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        this.setState({
-          location: {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          },
-          haveUsersLocation: true,
-          zoom: 13,
-          isMarkerShown: true
-        });
-      },
-      () => {
-        console.log("Please allow location");
-        fetch("https://ipapi.co/json")
-          .then(res => res.json())
-          .then(location => {
-            this.setState({
-              location: {
-                lat: location.latitude,
-                lng: location.longitude
-              },
-              haveUsersLocation: true,
-              zoom: 13,
-              isMarkerShown: true
-            });
-          });
-      },
-      { enableHighAccuracy: true, timeout: Infinity, maximumAge: 0 }
-    );
-    this.watchID = navigator.geolocation.watchPosition(position => {
-      this.setState({
-        location: {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        },
-        haveUsersLocation: true,
-        zoom: 13,
-        isMarkerShown: true
+    fetch("https://api.harveyneeds.org/api/v1/shelters?limit=20")
+      .then(r => r.json())
+      .then(data => {
+        this.setState({ shelters: data.shelters });
       });
-    });
   }
+
+  handleClick = (marker, event) => {
+    // console.log({ marker })
+    this.setState({ selectedMarker: marker });
+  };
 
   render() {
     const { dispatch } = this.props;
@@ -72,6 +43,9 @@ class MapView extends Component {
       <MapComponent
         isMarkerShown={this.state.isMarkerShown}
         onMarkerClick={this.handleMarkerClick}
+        selectedMarker={this.state.selectedMarker}
+        markers={this.state.shelters}
+        onClick={this.handleClick}
         latitude={this.state.location.lat}
         longitude={this.state.location.lng}
       />

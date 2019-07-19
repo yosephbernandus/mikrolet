@@ -1,5 +1,9 @@
 import React, { Component } from "react";
-import UserLocation from "../userLocation/UserLocation";
+// import MapComponent from "../location/MapComponent";
+// import SetDriverLocation from "../location/SetDriverLocation";
+
+import L from "leaflet";
+import { Map, TileLayer, Marker, Popup } from "react-leaflet";
 
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -35,6 +39,22 @@ import "../../css/style.css";
 import "../../css/switcher-style.css";
 
 import "../../App.css";
+// import iconUrl from "../../user-placeholder.svg";
+// import iconDriver from "../../car-placeholder.png";
+
+var myIcon = L.icon({
+  iconUrl: require("../../user-placeholder.svg"),
+  iconSize: [35, 51], // Ikuran Icon
+  iconAnchor: [29, 62], // Ukuran Popup ke Atas / ke bawah
+  popupAnchor: [-10, -57] // Ukuran Popup ke kiri / Ke kanan
+});
+
+var driverIcon = L.icon({
+  iconUrl: require("../../car-placeholder.png"),
+  iconSize: [35, 51], // Ikuran Icon
+  iconAnchor: [29, 62], // Ukuran Popup ke Atas / ke bawah
+  popupAnchor: [-10, -57] // Ukuran Popup ke kiri / Ke kanan
+});
 
 class User extends Component {
   constructor(props) {
@@ -48,9 +68,7 @@ class User extends Component {
       isMarkerShown: true,
       haveUsersLocation: false,
       zoom: 2,
-      driver: [],
-      selectedMarker: false,
-      estimated: null
+      driver: []
     };
 
     subscribeToDriver((err, driver) =>
@@ -74,8 +92,7 @@ class User extends Component {
           },
           haveUsersLocation: true,
           zoom: 13,
-          isMarkerShown: true,
-          estimated: null
+          isMarkerShown: true
         });
       },
       () => {
@@ -90,8 +107,7 @@ class User extends Component {
               },
               haveUsersLocation: true,
               zoom: 13,
-              isMarkerShown: true,
-              estimated: null
+              isMarkerShown: true
             });
           });
       },
@@ -165,34 +181,6 @@ class User extends Component {
   handleClick = (marker, event) => {
     // console.log({ marker })
     this.setState({ selectedMarker: marker });
-
-    const directionsService = new window.google.maps.DirectionsService();
-    let newLat = parseFloat(marker.latitude);
-    let newLong = parseFloat(marker.longitude);
-    const origin = {
-      lat: this.state.location.lat,
-      lng: this.state.location.lng
-    };
-    const destination = { lat: newLat, lng: newLong };
-
-    directionsService.route(
-      {
-        origin: origin,
-        destination: destination,
-        travelMode: window.google.maps.TravelMode.DRIVING
-      },
-      (result, status) => {
-        if (status === window.google.maps.DirectionsStatus.OK) {
-          const time = result.routes[0];
-          const legs = time.legs[0].duration.text;
-          this.setState({
-            estimated: legs
-          });
-        } else {
-          console.log(`error fetching directions ${result}`);
-        }
-      }
-    );
   };
 
   formSubmitted = event => {
@@ -224,14 +212,172 @@ class User extends Component {
                 <div class="card">
                   <div class="card-header text-center">Map Informations</div>
                   <div className="map">
-                    <UserLocation
+                    {/* <MapComponent
+                      selectedMarker={this.state.selectedMarker}
+                      markers={this.state.shelter}
+                      onClick={this.handleClick}
+                      isMarkerShown={this.state.isMarkerShown}
+                      onMarkerClick={this.handleMsarkerClick}
                       latitude={this.state.location.lat}
                       longitude={this.state.location.lng}
-                      markers={driver}
-                      onClick={this.handleClick}
-                      estimated={this.state.estimated}
-                      selectedMarker={this.state.selectedMarker}
-                    />
+                    /> */}
+                    <Map
+                      className="map"
+                      center={location}
+                      worldCopyJump={true}
+                      zoom={this.state.zoom}
+                    >
+                      <TileLayer
+                        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      {/* {this.state.haveUsersLocation ? ( */}
+                      <Marker position={location} icon={myIcon}>
+                        <Popup>
+                          <div>
+                            <p>
+                              <h6 className="card-title">
+                                <i
+                                  className="icofont-user-alt-7 text-primary"
+                                  color="blue"
+                                />
+                                <strong> {auth.user.name}</strong>
+                              </h6>
+                            </p>
+                            <hr />
+                            <p className="card-subtitle mb-2 text-muted">
+                              <i className="icofont-clock-time" />{" "}
+                              <span className="text-success">20 minutes</span>{" "}
+                              to your location
+                            </p>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-sm btn-block"
+                              disabled
+                            >
+                              Jumlah Penumpang{" "}
+                              <span className="badge badge-light">
+                                {this.state.counter}
+                              </span>
+                            </button>
+                            <hr />
+                            <p className="card-text">
+                              <i className="icofont-ui-message text-primary" />{" "}
+                              the card title and the card's content.
+                            </p>
+                          </div>
+                        </Popup>
+                      </Marker>
+                      {/* {socket.driverLocation.map(location => (
+                        <Marker
+                          position={[location.latitude, location.longitude]}
+                          icon={driverIcon}
+                        >
+                          <Popup>
+                            <div>
+                              <p>
+                                <h6 className="card-title">
+                                  <i
+                                    className="icofont-user-alt-7 text-primary"
+                                    color="blue"
+                                  />
+                                  <strong> {location.name}</strong>
+                                </h6>
+                              </p>
+                              <hr />
+                              <p className="card-subtitle mb-2 text-muted">
+                                <i className="icofont-car" />{" "}
+                                <span className="text-uppercase">
+                                  {location.kodePlatNomor}
+                                </span>{" "}
+                                <br />
+                                <i className="icofont-map-pins" />{" "}
+                                {location.trayek} {"  "}{" "}
+                                <span className="badge badge-secondary">
+                                  Rp. 6.000,-
+                                </span>{" "}
+                                <br />
+                                <i className="icofont-clock-time" />{" "}
+                                <span className="text-success">20 minutes</span>{" "}
+                                to your location
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn-primary btn-sm btn-block"
+                                disabled
+                              >
+                                Jumlah Penumpang{" "}
+                                <span className="badge badge-light">4</span>
+                              </button>
+                              <hr />
+                              <p className="card-text">
+                                <i className="icofont-ui-message text-primary" />{" "}
+                                the card title and the card's content.
+                              </p>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))} */}
+                      {/* <Marker position={driverLocation} icon={myIcon}>
+                        <Popup>
+                          A pretty CSS3 popup. <br /> Easily customizable.
+                        </Popup>
+                      </Marker> */}
+                      {/* // ) : ( // "" // )} */}
+
+                      {driver.map(location => (
+                        <Marker
+                          position={[location.latitude, location.longitude]}
+                          icon={driverIcon}
+                        >
+                          <Popup>
+                            <div>
+                              <p>
+                                <h6 className="card-title">
+                                  <i
+                                    className="icofont-user-alt-7 text-primary"
+                                    color="blue"
+                                  />
+                                  <strong> {location.name}</strong>
+                                </h6>
+                              </p>
+                              <hr />
+                              <p className="card-subtitle mb-2 text-muted">
+                                <i className="icofont-car" />{" "}
+                                <span className="text-uppercase">
+                                  {location.kodePlatNomor}
+                                </span>{" "}
+                                <br />
+                                <i className="icofont-map-pins" />{" "}
+                                {location.trayek} {"  "}{" "}
+                                <span className="badge badge-secondary">
+                                  Rp. 6.000,-
+                                </span>{" "}
+                                <br />
+                                <i className="icofont-clock-time" />{" "}
+                                <span className="text-success">20 minutes</span>{" "}
+                                to your location
+                              </p>
+                              <button
+                                type="button"
+                                className="btn btn-primary btn-sm btn-block"
+                                disabled
+                              >
+                                Jumlah Penumpang{" "}
+                                <span className="badge badge-light">
+                                  {location.seat}
+                                </span>
+                              </button>
+                              <hr />
+                              <p className="card-text">
+                                <i className="icofont-ui-message text-primary" />{" "}
+                                the card title and the card's content.
+                              </p>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                    </Map>
                   </div>
                 </div>
                 <div className="post-author">

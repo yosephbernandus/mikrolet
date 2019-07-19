@@ -19,48 +19,66 @@ const MapComponent = compose(
   }),
   withScriptjs,
   withGoogleMap
-)(props => (
-  <GoogleMap
-    defaultZoom={13}
-    defaultCenter={{ lat: props.latitude, lng: props.longitude }}
-  >
-    {props.isMarkerShown && (
-      <Marker
-        position={{ lat: props.latitude, lng: props.longitude }}
-        onClick={props.onMarkerClick}
-        icon={{
-          url: iconUrl,
-          size: { width: 30, height: 30 },
-          scaledSize: { width: 30, height: 30 }
-        }}
-      />
-    )}
-  </GoogleMap>
-));
-// )(props => {
-//   return (
-//     <GoogleMap
-//       defaultZoom={8}
-//       defaultCenter={{ lat: props.latitude, lng: props.longitude }}
-//     >
-//       {props.markers.map(marker => {
-//         const onClick = props.onClick.bind(this, marker);
-//         return (
-//           <Marker
-//             key={marker.id}
-//             onClick={onClick}
-//             position={{ lat: marker.latitude, lng: marker.longitude }}
-//           >
-//             {props.selectedMarker === marker && (
-//               <InfoWindow>
-//                 <div>{marker.shelter}</div>
-//               </InfoWindow>
-//             )}
-//           </Marker>
-//         );
-//       })}
-//     </GoogleMap>
-//   );
-// });
+  // )(props => (
+  //   <GoogleMap
+  //     defaultZoom={13}
+  //     defaultCenter={{ lat: props.latitude, lng: props.longitude }}
+  //   >
+  //     {props.isMarkerShown && (
+  //       <Marker
+  //         position={{ lat: props.latitude, lng: props.longitude }}
+  //         onClick={props.onMarkerClick}
+  //         icon={{
+  //           url: iconUrl,
+  //           size: { width: 30, height: 30 },
+  //           scaledSize: { width: 30, height: 30 }
+  //         }}
+  //       />
+  //     )}
+  //   </GoogleMap>
+  // ));
+)(props => {
+  return (
+    <GoogleMap defaultZoom={8} defaultCenter={{ lat: 29.5, lng: -95 }}>
+      {props.markers.map(marker => {
+        const onClick = props.onClick.bind(this, marker);
+        return (
+          <Marker
+            key={marker.id}
+            onClick={onClick}
+            position={{ lat: marker.latitude, lng: marker.longitude }}
+          >
+            {props.selectedMarker === marker && (
+              <InfoWindow>
+                <div>{marker.shelter}</div>
+              </InfoWindow>
+            )}
+          </Marker>
+        );
+      })}
+    </GoogleMap>
+    // <GoogleMap
+    //   defaultZoom={8}
+    //   defaultCenter={{ lat: props.latitude, lng: props.longitude }}
+    // >
+    //   {props.markers.map(marker => {
+    //     const onClick = props.onClick.bind(this, marker);
+    //     return (
+    //       <Marker
+    //         key={marker.id}
+    //         onClick={onClick}
+    //         position={{ lat: marker.latitude, lng: marker.longitude }}
+    //       >
+    //         {props.selectedMarker === marker && (
+    //           <InfoWindow>
+    //             <div>{marker.shelter}</div>
+    //           </InfoWindow>
+    //         )}
+    //       </Marker>
+    //     );
+    //   })}
+    // </GoogleMap>
+  );
+});
 
 export default MapComponent;

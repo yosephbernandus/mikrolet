@@ -23,6 +23,8 @@ import Dashboard from "./components/dashboard/Dashboard";
 import MultipleMarkerGmaps from "./components/location/MultipleMarkerGmaps";
 import PrivateRoute from "./components/common/PrivateRoute";
 import DriverRoute from "./components/common/DriverRoute";
+import LeafletMap from "./components/location/LeafletMap";
+import MapTravel from "./components/location/MapTravel";
 
 import "./App.css";
 import configureSocket from "./actions/socket";
@@ -59,6 +61,8 @@ class App extends Component {
           <div className="App">
             <Navbar />
             <Route exact path="/" component={Landing} />
+            <Route exact path="/leafletmap" component={LeafletMap} />
+            <Route exact path="/maptravel" component={MapTravel} />
 
             <div className="container">
               <Route exact path="/registeruser" component={RegisterUser} />
