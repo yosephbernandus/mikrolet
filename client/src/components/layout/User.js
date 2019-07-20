@@ -50,14 +50,18 @@ class User extends Component {
       zoom: 2,
       driver: [],
       selectedMarker: false,
-      estimated: null
+      estimated: null,
+      route: ""
     };
 
-    subscribeToDriver((err, driver) =>
-      this.setState({
-        driver
-      })
-    );
+    this.onChange = this.onChange.bind(this);
+    console.log(this.state.route);
+
+    // subscribeToDriver((err, driver) =>
+    //   this.setState({
+    //     driver
+    //   })
+    // );
   }
 
   //Allow
@@ -75,7 +79,8 @@ class User extends Component {
           haveUsersLocation: true,
           zoom: 13,
           isMarkerShown: true,
-          estimated: null
+          estimated: null,
+          route: null
         });
       },
       () => {
@@ -91,7 +96,8 @@ class User extends Component {
               haveUsersLocation: true,
               zoom: 13,
               isMarkerShown: true,
-              estimated: null
+              estimated: null,
+              route: null
             });
           });
       },
@@ -210,10 +216,28 @@ class User extends Component {
     }));
   };
 
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+    console.log(this.state.route);
+  }
+
   render() {
     const { auth } = this.props;
     const { driver } = this.state;
     const location = [this.state.location.lat, this.state.location.lng];
+    const options = [
+      { label: "Semua Jurusan", value: "" },
+      { label: "Paal 2 - Politeknik", value: "Paal 2 - Politeknik" },
+      { label: "Paal 2 - 45", value: "Paal 2 - 45" },
+      { label: "Paal 2 - Airmadidi ", value: "Paal 2 - Airmadidi" },
+      { label: "Paal 2 - Karombasan", value: "Paal 2 - Karombasan" }
+    ];
+
+    const selectOptions = options.map(option => (
+      <option key={option.label} value={option.value}>
+        {option.label}
+      </option>
+    ));
 
     return (
       <section className="blog-detail" id="blog">
@@ -265,11 +289,18 @@ class User extends Component {
                   Welcome To Intelligent Information System for General
                   Transportation In Manado City. Thanks for stopping by!
                 </CardTitle>
-                <Form onSubmit={this.formSubmitted}>
+                <Form onSubmit={this.onSubmit}>
                   <FormGroup>
                     <Label for="message">Search</Label>{" "}
                     <i className="icofont-search" />
                     <br />
+                    <select
+                      name="route"
+                      value={this.state.route}
+                      onChange={this.onChange}
+                    >
+                      {selectOptions}
+                    </select>
                     <div className="btn-group btn-block">
                       <button
                         type="button"
@@ -336,6 +367,23 @@ class User extends Component {
                     </div>
                   </FormGroup>
                   <br />
+                  <FormGroup>
+                    <Label for="message">Message</Label>
+                    <Input
+                      onChange={this.valueChanged}
+                      type="textarea"
+                      name="message"
+                      id="message"
+                      placeholder="Enter a message"
+                    />
+                  </FormGroup>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={!this.state.haveUsersLocation}
+                  >
+                    Send Message
+                  </Button>
                 </Form>
               </Card>
             </div>

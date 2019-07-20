@@ -173,6 +173,24 @@ webSocket.sockets.on("connection", socket => {
     });
   });
 
+  socket.on("DRIVER_MESSAGE", message => {
+    let messageFields = {};
+
+    messageFields.users = message.user;
+    messageFields.message = message.message.message;
+
+    Location.findOne({ users: message.user }).then(messageDriver => {
+      if (messageDriver) {
+        console.log(messageDriver);
+        Location.findOneAndUpdate(
+          { users: message.user },
+          { $set: messageFields },
+          { new: true }
+        ).then(console.log());
+      }
+    });
+  });
+
   socket.on("CHANGE_COUNT_PASSENGERS", seat => {
     let seatFields = {};
 
@@ -200,7 +218,7 @@ webSocket.sockets.on("connection", socket => {
       Location.find({ status: "driver" }, (err, data) => {
         if (err) throw err;
         if (data) {
-          // RESEND ALL USERS
+          console.log(data);
           socket.emit("driver", data);
         }
       });

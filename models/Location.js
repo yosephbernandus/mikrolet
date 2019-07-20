@@ -20,6 +20,10 @@ const LocationSchema = new Schema({
   kodePlatNomor: {
     type: String
   },
+  message: {
+    type: String,
+    default: null
+  },
   trayek: {
     type: String
   },

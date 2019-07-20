@@ -31,6 +31,10 @@ export const changeSeat = seat => {
   socket.emit("CHANGE_SEAT", seat);
 };
 
+export const driverMessage = message => {
+  socket.emit("DRIVER_MESSAGE", message);
+};
+
 export const changeCountPassengers = seat => {
   socket.emit("CHANGE_COUNT_PASSENGERS", seat);
 };

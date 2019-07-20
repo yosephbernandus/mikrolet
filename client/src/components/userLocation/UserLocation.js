@@ -86,8 +86,9 @@ const UserLocation = compose(
                   </button>
                   <hr />
                   <p className="card-text">
-                    <i className="icofont-ui-message text-primary" /> the card
-                    title and the card's content.
+                    <i className="icofont-ui-message text-primary" />{" "}
+                    {marker.message === null && "No message from driver"}
+                    {marker.message}
                   </p>
                 </div>
               </InfoWindow>

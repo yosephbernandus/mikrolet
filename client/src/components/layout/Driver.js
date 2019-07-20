@@ -7,7 +7,8 @@ import PropTypes from "prop-types";
 import {
   sendDriverLocationToServer,
   changeSeat,
-  subscribeToUser
+  subscribeToUser,
+  driverMessage
 } from "../../actions/socket";
 import { getUsers } from "../../actions/socketActions";
 
@@ -62,6 +63,7 @@ class Driver extends Component {
       isMarkerShown: true,
       haveUsersLocation: false,
       zoom: 2,
+      userMessage: "",
       user: []
     };
 
@@ -172,6 +174,26 @@ class Driver extends Component {
       changeSeat(seat);
     }
   }
+
+  formSubmitted = event => {
+    const { auth } = this.props;
+    event.preventDefault();
+    let userMessage = {
+      user: auth.user.id,
+      message: this.state.userMessage
+    };
+    driverMessage(userMessage);
+  };
+
+  valueChanged = event => {
+    const { name, value } = event.target;
+    this.setState(prevState => ({
+      userMessage: {
+        ...prevState.userMessage,
+        [name]: value
+      }
+    }));
+  };
 
   render() {
     const { auth } = this.props;
@@ -358,6 +380,23 @@ class Driver extends Component {
                     </div>
                   </FormGroup>
                   <br />
+                  <FormGroup>
+                    <Label for="message">Message</Label>
+                    <Input
+                      onChange={this.valueChanged}
+                      type="textarea"
+                      name="message"
+                      id="message"
+                      placeholder="Enter a message"
+                    />
+                  </FormGroup>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={!this.state.haveUsersLocation}
+                  >
+                    Send Message
+                  </Button>
                 </Form>
               </Card>
             </div>
