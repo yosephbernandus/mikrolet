@@ -31,16 +31,24 @@ export const changeSeat = seat => {
   socket.emit("CHANGE_SEAT", seat);
 };
 
-export const driverMessage = message => {
+export const driverSendMessage = message => {
   socket.emit("DRIVER_MESSAGE", message);
+};
+
+export const userSendMessage = message => {
+  socket.emit("USER_MESSAGE", message);
 };
 
 export const changeCountPassengers = seat => {
   socket.emit("CHANGE_COUNT_PASSENGERS", seat);
 };
 
+export const subscribeToDriverRoute = route => {
+  socket.emit("ROUTE", route);
+};
+
 export const subscribeToDriver = cb => {
-  socket.on("driver", timestamp => cb(null, timestamp));
+  socket.on("driver", driver => cb(null, driver));
   socket.emit("subscribeToDriver", 1000);
 };
 

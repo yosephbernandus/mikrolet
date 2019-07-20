@@ -6,7 +6,8 @@ import PropTypes from "prop-types";
 import {
   subscribeToDriver,
   sendUserLocationToServer,
-  changeCountPassengers
+  changeCountPassengers,
+  userSendMessage
 } from "../../actions/socket";
 import { getDrivers } from "../../actions/socketActions";
 
@@ -50,18 +51,18 @@ class User extends Component {
       zoom: 2,
       driver: [],
       selectedMarker: false,
+      userMessage: "",
       estimated: null,
       route: ""
     };
 
     this.onChange = this.onChange.bind(this);
-    console.log(this.state.route);
 
-    // subscribeToDriver((err, driver) =>
-    //   this.setState({
-    //     driver
-    //   })
-    // );
+    subscribeToDriver((err, driver) =>
+      this.setState({
+        driver
+      })
+    );
   }
 
   //Allow
@@ -202,8 +203,14 @@ class User extends Component {
   };
 
   formSubmitted = event => {
+    const { auth } = this.props;
     event.preventDefault();
-    console.log(this.state.userMessage);
+    let userMessage = {
+      user: auth.user.id,
+      message: this.state.userMessage
+    };
+
+    userSendMessage(userMessage);
   };
 
   valueChanged = event => {
@@ -218,7 +225,7 @@ class User extends Component {
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
-    console.log(this.state.route);
+    this.setState({ route: e.target.value });
   }
 
   render() {
@@ -301,6 +308,7 @@ class User extends Component {
                     >
                       {selectOptions}
                     </select>
+                    {this.state.route}
                     <div className="btn-group btn-block">
                       <button
                         type="button"

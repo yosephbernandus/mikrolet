@@ -8,7 +8,7 @@ import {
   sendDriverLocationToServer,
   changeSeat,
   subscribeToUser,
-  driverMessage
+  driverSendMessage
 } from "../../actions/socket";
 import { getUsers } from "../../actions/socketActions";
 
@@ -63,7 +63,7 @@ class Driver extends Component {
       isMarkerShown: true,
       haveUsersLocation: false,
       zoom: 2,
-      userMessage: "",
+      driverMessage: "",
       user: []
     };
 
@@ -178,18 +178,19 @@ class Driver extends Component {
   formSubmitted = event => {
     const { auth } = this.props;
     event.preventDefault();
-    let userMessage = {
+    let driverMessage = {
       user: auth.user.id,
-      message: this.state.userMessage
+      message: this.state.driverMessage
     };
-    driverMessage(userMessage);
+    driverSendMessage(driverMessage);
   };
 
   valueChanged = event => {
     const { name, value } = event.target;
+
     this.setState(prevState => ({
-      userMessage: {
-        ...prevState.userMessage,
+      driverMessage: {
+        ...prevState.driverMessage,
         [name]: value
       }
     }));
